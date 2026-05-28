@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>កម្មវិធីបង្កើតវិញ្ញាសាអូតូ - គណិតវិទ្យា</title>
+    
+    <!-- ប្រើប្រាស់ Tailwind CSS សម្រាប់រចនាផ្ទៃមុខ -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- ប្រើប្រាស់ Google Fonts សម្រាប់អក្សរខ្មែរ -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Suwannaphum:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- បណ្ណាល័យ MathJax សម្រាប់បង្ហាញរូបមន្តគណិតវិទ្យា (LaTeX) -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        body {
+            font-family: 'Suwannaphum', serif;
+            background-color: #f3f4f6;
+        }
+        
+        /* កំណត់ទំហំក្រដាស A4 សម្រាប់បង្ហាញលើអេក្រង់ */
+        .a4-paper {
+            width: 210mm;
+            min-height: 297mm;
+            background: white;
+            margin: 0 auto;
+            padding: 20mm;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+
+        .math-block {
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+
+        /* ជើងទំព័រ (Footer) */
+        .footer {
+            position: absolute;
+            bottom: 20mm;
+            left: 20mm;
+            right: 20mm;
+            text-align: right;
+            font-weight: bold;
+            font-size: 14px;
+            color: #374151;
+            border-top: 2px solid #000;
+            padding-top: 10px;
+        }
+
+        /* កំណត់ពេល Print មិនឲ្យចេញប៊ូតុង និងឲ្យពេញក្រដាសល្អ */
+        @media print {
+            body {
+                background-color: white;
+                margin: 0;
+                padding: 0;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .a4-paper {
+                box-shadow: none;
+                margin: 0;
+                padding: 15mm;
+                width: 100%;
+                min-height: 100vh;
+            }
+            .footer {
+                bottom: 15mm;
+            }
+        }
+    </style>
+</head>
+<body class="py-8">
+
+    <!-- ផ្ទាំងបញ្ជា (បង្ហាញតែលើអេក្រង់) -->
+    <div class="max-w-4xl mx-auto mb-6 flex justify-between items-center no-print bg-white p-4 rounded-lg shadow">
+        <div>
+            <h1 class="text-xl font-bold text-blue-700">ប្រព័ន្ធគ្រប់គ្រងវិញ្ញាសា</h1>
+            <p class="text-sm text-gray-500">ចុចប៊ូតុងដើម្បីបង្កើតលេខលំហាត់ដោយស្វ័យប្រវត្តិ</p>
+        </div>
+        <div class="flex flex-wrap gap-2 justify-end">
+            <!-- ប៊ូតុងទាញយក Word (MathType) -->
+            <button onclick="downloadWord()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-3 rounded shadow flex items-center gap-2 text-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Word (MathType)
+            </button>
+            
+            <!-- ប៊ូតុងទាញយក LaTeX / Obsidian -->
+            <button onclick="downloadMarkdown()" class="bg-gray-700 hover:bg-gray-800 text-white font-bold py-2 px-3 rounded shadow flex items-center gap-2 text-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                </svg>
+                LaTeX/Obsidian
+            </button>
+
+            <!-- ប៊ូតុងបង្កើតថ្មី -->
+            <button onclick="generateExam()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-3 rounded shadow flex items-center gap-2 text-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+                </svg>
+                បង្កើតថ្មី
+            </button>
+            
+            <!-- ប៊ូតុង Print -->
+            <button onclick="window.print()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-3 rounded shadow flex items-center gap-2 text-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd" />
+                </svg>
+                Print
+            </button>
+        </div>
+    </div>
+
+    <!-- ក្រដាសវិញ្ញាសា -->
+    <div class="a4-paper text-sm text-gray-900 leading-relaxed" id="exam-content">
+        <!-- ខ្លឹមសារនឹងត្រូវបានបញ្ចូលទីនេះដោយ JavaScript -->
+    </div>
+
+    <script>
+        // អនុគមន៍សម្រាប់ទាញយកលេខចៃដន្យ (Random Number)
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        // អថេរសកល (Global Variables) សម្រាប់ផ្ទុកទិន្នន័យបច្ចុប្បន្ន ដើម្បីពេលទាញយកបានទិន្នន័យដូចគ្នា
+        let currentYear, currentLimitNum1, currentK;
+
+        // អនុគមន៍សម្រាប់បង្កើតវិញ្ញាសា
+        function generateExam() {
+            // បង្កើតអថេរអូតូ (Auto Variables)
+            currentYear = getRandomInt(2023, 2026);
+            currentLimitNum1 = getRandomInt(2, 5);
+            currentK = [9, 16, 25][getRandomInt(0, 2)];
+            
+            // ខ្លឹមសារវិញ្ញាសាសម្រាប់បង្ហាញលើ Website
+            const htmlContent = `
+                <div class="text-center mb-6">
+                    <h2 class="text-xl font-bold">វិញ្ញាសាទី១ ត្រៀមប្រឡងប្រឡងបាក់ឌុបមធ្យមសិក្សាទុតិយភូមិ</h2>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <span class="font-bold">I.</span> គេមានចំនួនកុំផ្លិច \\( a_m = (1 - m) + (3 - m)i\\sqrt{3} \\) ។<br>
+                        កំណត់ \\( a_2 \\) និង \\( a_4 \\) ដោយឱ្យលទ្ធផលជាទម្រង់ពីជគណិត និងត្រីកោណមាត្រ។ គណនា \\( (a_2)^{${currentYear}} \\) និង \\( (a_4)^{${currentYear}} \\)។<br>
+                        យក \\( b = i\\frac{\\sqrt{3}}{3}a_4 \\) ចូរកំណត់ \\( b \\) ជាទម្រង់ត្រីកោណមាត្រ។ បង្កើតសមីការដឺក្រេទី២ ដែលមានឫស \\( a_2 \\) និង \\( b \\)។
+                    </div>
+
+                    <div>
+                        <span class="font-bold">II.</span> គណនាលីមីត និងអាំងតេក្រាលនៃអនុគមន៍ដូចខាងក្រោម៖
+                        <div class="math-block">
+                            \\( \\lim_{x\\to0} \\frac{\\sin 3x - ${currentLimitNum1} \\tan 3x + x^2}{x + 5 \\tan 2x} \\) &nbsp;&nbsp;&nbsp;&nbsp;
+                            \\( \\lim_{x\\to2} \\frac{x^3 - 3x^2 + 4x - 4}{\\sqrt{x + 2} - 2} \\) &nbsp;&nbsp;&nbsp;&nbsp;
+                            \\( \\lim_{x\\to0} \\frac{\\ln(1 - 2\\sin^2 2x) + 3\\tan^2 3x}{x^2} \\)
+                        </div>
+                        គេឱ្យអនុគមន៍ \\( f(x) = \\frac{3\\cos x - \\sin x}{\\sin x + \\cos x} \\) ដែល \\( x \\neq -\\frac{\\pi}{4} \\)។ គណនាអាំងតេក្រាល \\( I = \\int_{0}^{\\frac{\\pi}{2}} f(x)dx \\) ដោយដឹងថា \\( f(x) \\) អាចសរសេរជាទម្រង់ \\( f(x) = m + \\frac{n(\\sin x - \\cos x)}{\\sin x + \\cos x} \\)។
+                    </div>
+
+                    <div>
+                        <span class="font-bold">III.</span> គេឱ្យប៉ារ៉ាបូល \\( P \\) ដែលមានសមីការ \\( y^2 - 4y - 4mx + 4 - 4m(m + 1) = 0 \\)។<br>
+                        <div class="ml-4">
+                            a. ស្រាយបំភ្លឺថា \\( P \\) មានកុំប៉ូលជាចំណុចមួយដែលត្រូវកំណត់ដោយ \\( m \\)។<br>
+                            b. បើ \\( m = 1 \\) ចូររកផលបូកបម្រែបម្រួល និងសមីការប៉ារ៉ាបូល \\( P \\)។
+                        </div>
+                        គេឱ្យប្លង់ពីរ \\( P: 2x - y + 2z - 4 = 0 \\) និង \\( Q: x + y - \\frac{1}{2}z - 2 = 0 \\)។<br>
+                        <div class="ml-4">
+                            a. ស្រាយបញ្ជាក់ថា \\( P \\) និង \\( Q \\) កែងគ្នា។ បង្ហាញថា \\( A(1, 2, 2) \\) ជាចំណុចរួមនៃ \\( P \\) និង \\( Q \\)។<br>
+                            b. សរសេរសមីការបន្ទាត់ \\( L \\) ជាប្រសព្វនៃប្លង់ទាំងពីរ។ បង្ហាញថា \\( L \\) ស្របនឹង \\( \\vec{n}_P \\times \\vec{n}_Q \\) ដែល \\( \\vec{n}_P \\) និង \\( \\vec{n}_Q \\) ជាវ៉ិចទ័រន័រម៉ាល់នៃ \\( P \\) និង \\( Q \\) រៀងគ្នា។
+                        </div>
+                    </div>
+
+                    <div>
+                        <span class="font-bold">IV.</span> \\( f \\) ជាអនុគមន៍កំណត់ដោយ \\( f(x) = x + \\frac{${currentK}}{4(e^x - 1)} \\) មានក្រាបតំណាង \\( C \\)។<br>
+                        <div class="ml-4">
+                            ១. រកដែនកំណត់នៃ \\( f \\) គណនាលីមីតនៃ \\( f \\) ត្រង់ \\( +\\infty, -\\infty \\) និង \\( 0 \\)។ ទាញរកសមីការអាស៊ីមតូត នៃក្រាប \\( C \\)។<br>
+                            ២. ស្រាយបញ្ជាក់ថា \\( D_1: y = x \\) ជាអាស៊ីមតូត ត្រេតនៃក្រាប \\( C \\)។ បញ្ជាក់ទីតាំងធៀបរវាងក្រាប \\( C \\) និង \\( D_1 \\)។<br>
+                            ៣. ស្រាយបំភ្លឺថា \\( f(x) = x - \\frac{${currentK}}{4} + \\frac{${currentK}e^x}{4(e^x - 1)} \\)។ ទាញរកសមីការអាស៊ីមតូត ត្រេត \\( D_2 \\) នៃក្រាប \\( C \\)។<br>
+                            ៤. ស្រាយបំភ្លឺថា \\( \\forall x \\neq 0, f'(x) = \\frac{(e^x - 4)(4e^x - 1)}{4(e^x - 1)^2} \\)។ សិក្សាទិសដៅ និងសង់តារាងអថេរភាពនៃ \\( f \\)។<br>
+                            ៥. សរសេរសមីការបន្ទាត់ \\( T \\) ប៉ះនឹងក្រាប \\( C \\) ត្រង់ចំណុច \\( x = \\ln 2 \\)។ សង់ក្រាប \\( C \\)។<br>
+                            ៦. គណនាផ្ទៃក្រឡានៃផ្នែកដែលខណ្ឌដោយក្រាប \\( C \\) និងបន្ទាត់ \\( D_2 \\) ត្រង់ចំណុច \\( x = \\ln 4 \\) និង \\( x = \\ln 6 \\)។
+                        </div>
+                    </div>
+
+                    <div>
+                        <span class="font-bold">V.</span> កាបូបមួយប្រភេទ មានរូបដែលជាប្រភេទ ៥ មុខ សម្បុរ ៤ មុខ និង ហាង ៤ មុខ។ បុរសម្នាក់បានទៅទិញរូបចំនួន ៣ មុខ ដោយចៃដន្យ។ គណនាប្រូបាប៊ីលីតេនៃព្រឹត្តិការណ៍៖<br>
+                        <div class="ml-4">
+                            \\( A \\)៖ កម្បូដបាន ៣ មុខដូចគ្នា។<br>
+                            \\( B \\)៖ កម្បូដបាន សម្បុរ តែ ១ មុខគត់។<br>
+                            \\( C \\)៖ កម្បូដបាន ៣ មុខផ្សេងៗគ្នា។
+                        </div>
+                    </div>
+
+                    <div>
+                        <span class="font-bold">VI.</span> គេឱ្យសមីការឌីផេរ៉ង់ស្យែល \\( E: (y' - 2y)' = 3(y' - 2y) \\) និង \\( (E'): f' - 3f = 0 \\)។<br>
+                        <div class="ml-4">
+                            ១. ដោះស្រាយសមីការ \\( (E') \\) ដោយដឹងថា ក្រាបនៃ \\( f \\) កាត់ \\( A(0,3) \\) រួចទាញរកចម្លើយទូទៅនៃសមីការ \\( E \\) តាម \\( f \\)។<br>
+                            ២. ដោះស្រាយសមីការ \\( (E) \\) តាមរបៀបទី ២ រួចរកចម្លើយពិសេសនៃ \\( (E) \\) ដោយដឹងថា ក្រាប \\( C \\) ប៉ះនឹងបន្ទាត់ \\( y = x - 4 \\) ត្រង់ចំណុចដែលមានអាប់ស៊ីស ០។
+                        </div>
+                    </div>
+                </div>
+
+                <div class="footer">
+                    បង្រៀនដោយ លោកគ្រូ ឆយ សុវ៉ាន់ណេត Tel: 016 567 437
+                </div>
+            `;
+
+            // បញ្ចូលកូដទៅក្នុង HTML
+            document.getElementById('exam-content').innerHTML = htmlContent;
+
+            // ប្រាប់ MathJax ឲ្យ Render រូបមន្ត LaTeX ឡើងវិញ
+            if (window.MathJax) {
+                MathJax.typesetPromise([document.getElementById('exam-content')]).catch(function (err) {
+                    console.error('MathJax rendering error:', err.message);
+                });
+            }
+        }
+
+        // អនុគមន៍សម្រាប់រៀបចំអត្ថបទ (Markdown/LaTeX) សម្រាប់ទាញយក
+        function getExamMarkdown() {
+            return `
+# វិញ្ញាសាទី១ ត្រៀមប្រឡងប្រឡងបាក់ឌុបមធ្យមសិក្សាទុតិយភូមិ
+
+**I.** គេមានចំនួនកុំផ្លិច $a_m = (1 - m) + (3 - m)i\\sqrt{3}$ ។
+កំណត់ $a_2$ និង $a_4$ ដោយឱ្យលទ្ធផលជាទម្រង់ពីជគណិត និងត្រីកោណមាត្រ។ គណនា $(a_2)^{${currentYear}}$ និង $(a_4)^{${currentYear}}$។
+យក $b = i\\frac{\\sqrt{3}}{3}a_4$ ចូរកំណត់ $b$ ជាទម្រង់ត្រីកោណមាត្រ។ បង្កើតសមីការដឺក្រេទី២ ដែលមានឫស $a_2$ និង $b$។
+
+**II.** គណនាលីមីត និងអាំងតេក្រាលនៃអនុគមន៍ដូចខាងក្រោម៖
+$\\lim_{x\\to0} \\frac{\\sin 3x - ${currentLimitNum1} \\tan 3x + x^2}{x + 5 \\tan 2x}$ 
+$\\lim_{x\\to2} \\frac{x^3 - 3x^2 + 4x - 4}{\\sqrt{x + 2} - 2}$
+$\\lim_{x\\to0} \\frac{\\ln(1 - 2\\sin^2 2x) + 3\\tan^2 3x}{x^2}$
+
+គេឱ្យអនុគមន៍ $f(x) = \\frac{3\\cos x - \\sin x}{\\sin x + \\cos x}$ ដែល $x \\neq -\\frac{\\pi}{4}$។ គណនាអាំងតេក្រាល $I = \\int_{0}^{\\frac{\\pi}{2}} f(x)dx$ ដោយដឹងថា $f(x)$ អាចសរសេរជាទម្រង់ $f(x) = m + \\frac{n(\\sin x - \\cos x)}{\\sin x + \\cos x}$។
+
+**III.** គេឱ្យប៉ារ៉ាបូល $P$ ដែលមានសមីការ $y^2 - 4y - 4mx + 4 - 4m(m + 1) = 0$។
+a. ស្រាយបំភ្លឺថា $P$ មានកុំប៉ូលជាចំណុចមួយដែលត្រូវកំណត់ដោយ $m$។
+b. បើ $m = 1$ ចូររកផលបូកបម្រែបម្រួល និងសមីការប៉ារ៉ាបូល $P$។
+
+គេឱ្យប្លង់ពីរ $P: 2x - y + 2z - 4 = 0$ និង $Q: x + y - \\frac{1}{2}z - 2 = 0$។
+a. ស្រាយបញ្ជាក់ថា $P$ និង $Q$ កែងគ្នា។ បង្ហាញថា $A(1, 2, 2)$ ជាចំណុចរួមនៃ $P$ និង $Q$។
+b. សរសេរសមីការបន្ទាត់ $L$ ជាប្រសព្វនៃប្លង់ទាំងពីរ។ បង្ហាញថា $L$ ស្របនឹង $\\vec{n}_P \\times \\vec{n}_Q$ ដែល $\\vec{n}_P$ និង $\\vec{n}_Q$ ជាវ៉ិចទ័រន័រម៉ាល់នៃ $P$ និង $Q$ រៀងគ្នា។
+
+**IV.** $f$ ជាអនុគមន៍កំណត់ដោយ $f(x) = x + \\frac{${currentK}}{4(e^x - 1)}$ មានក្រាបតំណាង $C$។
+១. រកដែនកំណត់នៃ $f$ គណនាលីមីតនៃ $f$ ត្រង់ $+\\infty, -\\infty$ និង $0$។ ទាញរកសមីការអាស៊ីមតូត នៃក្រាប $C$។
+២. ស្រាយបញ្ជាក់ថា $D_1: y = x$ ជាអាស៊ីមតូត ត្រេតនៃក្រាប $C$។ បញ្ជាក់ទីតាំងធៀបរវាងក្រាប $C$ និង $D_1$។
+៣. ស្រាយបំភ្លឺថា $f(x) = x - \\frac{${currentK}}{4} + \\frac{${currentK}e^x}{4(e^x - 1)}$។ ទាញរកសមីការអាស៊ីមតូត ត្រេត $D_2$ នៃក្រាប $C$។
+៤. ស្រាយបំភ្លឺថា $\\forall x \\neq 0, f'(x) = \\frac{(e^x - 4)(4e^x - 1)}{4(e^x - 1)^2}$។ សិក្សាទិសដៅ និងសង់តារាងអថេរភាពនៃ $f$។
+៥. សរសេរសមីការបន្ទាត់ $T$ ប៉ះនឹងក្រាប $C$ ត្រង់ចំណុច $x = \\ln 2$។ សង់ក្រាប $C$។
+៦. គណនាផ្ទៃក្រឡានៃផ្នែកដែលខណ្ឌដោយក្រាប $C$ និងបន្ទាត់ $D_2$ ត្រង់ចំណុច $x = \\ln 4$ និង $x = \\ln 6$។
+
+**V.** កាបូបមួយប្រភេទ មានរូបដែលជាប្រភេទ ៥ មុខ សម្បុរ ៤ មុខ និង ហាង ៤ មុខ។ បុរសម្នាក់បានទៅទិញរូបចំនួន ៣ មុខ ដោយចៃដន្យ។ គណនាប្រូបាប៊ីលីតេនៃព្រឹត្តិការណ៍៖
+$A$៖ កម្បូដបាន ៣ មុខដូចគ្នា។
+$B$៖ កម្បូដបាន សម្បុរ តែ ១ មុខគត់។
+$C$៖ កម្បូដបាន ៣ មុខផ្សេងៗគ្នា។
+
+**VI.** គេឱ្យសមីការឌីផេរ៉ង់ស្យែល $E: (y' - 2y)' = 3(y' - 2y)$ និង $(E'): f' - 3f = 0$។
+១. ដោះស្រាយសមីការ $(E')$ ដោយដឹងថា ក្រាបនៃ $f$ កាត់ $A(0,3)$ រួចទាញរកចម្លើយទូទៅនៃសមីការ $E$ តាម $f$។
+២. ដោះស្រាយសមីការ $(E)$ តាមរបៀបទី ២ រួចរកចម្លើយពិសេសនៃ $(E)$ ដោយដឹងថា ក្រាប $C$ ប៉ះនឹងបន្ទាត់ $y = x - 4$ ត្រង់ចំណុចដែលមានអាប់ស៊ីស ០។
+
+---
+បង្រៀនដោយ លោកគ្រូ ឆយ សុវ៉ាន់ណេត Tel: 016 567 437
+`.trim();
+        }
+
+        // អនុគមន៍ទាញយកឯកសារ Word (សម្រាប់ MathType)
+        function downloadWord() {
+            // បំប្លែង Markdown ទៅជា HTML ធម្មតា ដើម្បីឲ្យ Word អាចអានបាន
+            let content = getExamMarkdown()
+                .replace(/\n\n/g, '<br><br>')
+                .replace(/\n/g, '<br>')
+                .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+                
+            // រៀបចំទម្រង់ឯកសារ Word (.doc) 
+            // ចំណាំ៖ ការរក្សាសញ្ញា $ ... $ នឹងជួយឲ្យកម្មវិធី MathType ក្នុង Word អាចបំប្លែងទៅជារូបមន្តដោយស្វ័យប្រវត្តិ ពេលចុច Toggle TeX
+            const html = `
+            <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+            <head>
+                <meta charset='utf-8'>
+                <title>Exam</title>
+            </head>
+            <body style="font-family: 'Khmer OS Siemreap', sans-serif;">
+                <div style="font-size: 12pt; line-height: 1.5;">
+                    ${content}
+                </div>
+            </body>
+            </html>
+            `;
+
+            // បង្កើតឯកសារនិងទាញយក
+            const blob = new Blob(['\ufeff', html], { type: 'application/msword' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'exam_mathtype.doc';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // អនុគមន៍ទាញយកឯកសារ Markdown (.md) សម្រាប់ Obsidian និង LaTeX
+        function downloadMarkdown() {
+            const text = getExamMarkdown();
+            const blob = new Blob([text], { type: 'text/markdown;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'exam_obsidian_latex.md';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // ដំណើរការបង្កើតវិញ្ញាសាពេលបើកកម្មវិធីដំបូង
+        window.onload = generateExam;
+
+    </script>
+</body>
+</html>
