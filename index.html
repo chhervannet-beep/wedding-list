@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ប្រព័ន្ធគ្រប់គ្រងបញ្ជីភ្ញៀវមង្គលការ</title>
+    <!-- Google Fonts: Kantumruy Pro -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Kantumruy Pro', sans-serif;
+            background-color: #fcf8f5;
+        }
+    </style>
+</head>
+<body class="text-gray-800 min-h-screen pb-12">
+
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-rose-500 to-amber-500 text-white shadow-md py-6 px-4 mb-8">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="text-center md:text-left">
+                <h1 class="text-2xl md:text-3xl font-bold flex items-center justify-center md:justify-start gap-2">
+                    <i class="fa-solid fa-heart text-rose-200 animate-pulse"></i>
+                    ប្រព័ន្ធគ្រប់គ្រងបញ្ជីភ្ញៀវមង្គលការ
+                </h1>
+                <p class="text-sm text-rose-100 mt-1">កត់ត្រា និងគ្រប់គ្រងព័ត៌មានភ្ញៀវចូលរួមប្រកបដោយភាពងាយស្រួល</p>
+            </div>
+            <div class="bg-white/15 px-4 py-2 rounded-lg backdrop-blur-sm border border-white/20 text-center">
+                <span class="text-xs uppercase tracking-wider block text-rose-150">ថ្ងៃរៀបអាពាហ៍ពិពាហ៍</span>
+                <span class="font-semibold text-sm">កម្មវិធីមង្គលការ</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4">
+        
+        <!-- Dashboard Summary Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <!-- Card 1: Total Guests Registered -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-rose-100 flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-500 font-medium">ចំនួនអ្នកមកចុះឈ្មោះ</p>
+                    <h3 id="total-guests" class="text-3xl font-bold text-gray-800 mt-1">0</h3>
+                </div>
+                <div class="w-12 h-12 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-address-book"></i>
+                </div>
+            </div>
+
+            <!-- Card 2: Total Attendees -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-rose-100 flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-500 font-medium">ចំនួនអ្នកចូលរួមសរុប (រួមទាំងគ្នីគ្នា)</p>
+                    <h3 id="total-attendees" class="text-3xl font-bold text-gray-800 mt-1">0</h3>
+                </div>
+                <div class="w-12 h-12 bg-amber-50 text-amber-500 rounded-full flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+            </div>
+
+            <!-- Card 3: Total Gift Money -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-rose-100 flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-500 font-medium">ថវិកាចងដៃសរុប ($)</p>
+                    <h3 id="total-gifts" class="text-3xl font-bold text-emerald-600 mt-1">$0.00</h3>
+                </div>
+                <div class="w-12 h-12 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-hand-holding-dollar"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Left Column: Registration Form -->
+            <div class="lg:col-span-1">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-rose-100 sticky top-6">
+                    <h2 id="form-title" class="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2 border-b pb-3">
+                        <i class="fa-solid fa-user-plus text-rose-500"></i>
+                        ចុះឈ្មោះភ្ញៀវថ្មី
+                    </h2>
+                    
+                    <form id="guest-form" class="space-y-4">
+                        <input type="hidden" id="guest-id">
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">ឈ្មោះភ្ញៀវ <span class="text-rose-500">*</span></label>
+                            <input type="text" id="guest-name" required class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-rose-400 focus:border-rose-400 outline-none transition text-sm" placeholder="បញ្ចូលឈ្មោះភ្ញៀវ">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">លេខទូរស័ព្ទ</label>
+                                <input type="tel" id="guest-phone" class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-rose-400 focus:border-rose-400 outline-none transition text-sm" placeholder="លេខទូរស័ព្ទ">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">ចំនួនមកជាមួយ</label>
+                                <input type="number" id="guest-companions" min="0" value="0" class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-rose-400 focus:border-rose-400 outline-none transition text-sm" placeholder="ចំនួននាក់">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">ប្រភេទទំនាក់ទំនង</label>
+                            <select id="guest-relationship" class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-rose-400 focus:border-rose-400 outline-none transition text-sm bg-white">
+                                <option value="ខាងកូនកំលោះ">ខាងកូនកំលោះ</option>
+                                <option value="ខាងកូនស្រី">ខាងកូនស្រី</option>
+                                <option value="មិត្តភក្តិ">មិត្តភក្តិ</option>
+                                <option value="រួមការងារ">រួមការងារ</option>
+                                <option value="ផ្សេងៗ">ផ្សេងៗ</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">ចំនួនប្រាក់ចងដៃ ($)</label>
+                            <input type="number" id="guest-gift" min="0" value="0" step="any" class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-rose-400 focus:border-rose-400 outline-none transition text-sm" placeholder="ឧទាហរណ៍៖ 50">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">អាសយដ្ឋាន</label>
+                            <input type="text" id="guest-address" class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-rose-400 focus:border-rose-400 outline-none transition text-sm" placeholder="អាសយដ្ឋានបច្ចុប្បន្ន">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">កំណត់សម្គាល់</label>
+                            <textarea id="guest-notes" rows="2" class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-rose-400 focus:border-rose-400 outline-none transition text-sm resize-none" placeholder="ព័ត៌មានបន្ថែមផ្សេងៗ..."></textarea>
+                        </div>
+
+                        <div class="flex gap-2 pt-2">
+                            <button type="submit" id="btn-submit" class="flex-1 bg-gradient-to-r from-rose-500 to-amber-500 hover:from-rose-600 hover:to-amber-600 text-white font-medium py-2.5 px-4 rounded-xl transition shadow-sm text-sm">
+                                <i class="fa-solid fa-floppy-disk mr-1"></i> រក្សាទុក
+                            </button>
+                            <button type="button" id="btn-cancel" class="hidden bg-gray-100 hover:bg-gray-200 text-gray-600 font-medium py-2.5 px-4 rounded-xl transition text-sm" onclick="resetForm()">
+                                បោះបង់
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Right Column: Search and Table -->
+            <div class="lg:col-span-2">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-rose-100">
+                    <!-- Search Control -->
+                    <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
+                        <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                            <i class="fa-solid fa-list text-amber-500"></i>
+                            បញ្ជីឈ្មោះភ្ញៀវ
+                        </h2>
+                        <div class="relative w-full sm:w-72">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </span>
+                            <input type="text" id="search-input" oninput="filterGuests()" class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-rose-400 focus:border-rose-400 outline-none transition text-sm" placeholder="ស្វែងរកតាមឈ្មោះ ឬលេខទូរស័ព្ទ...">
+                        </div>
+                    </div>
+
+                    <!-- Guest Table Container -->
+                    <div class="overflow-x-auto rounded-xl border border-gray-100">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-50 text-gray-600 text-sm border-b border-gray-150">
+                                    <th class="py-3 px-4 font-semibold">ឈ្មោះ</th>
+                                    <th class="py-3 px-4 font-semibold">លេខទូរស័ព្ទ</th>
+                                    <th class="py-3 px-4 font-semibold">ទំនាក់ទំនង</th>
+                                    <th class="py-3 px-4 font-semibold text-center">មកជាមួយ</th>
+                                    <th class="py-3 px-4 font-semibold text-right">ប្រាក់ចងដៃ</th>
+                                    <th class="py-3 px-4 font-semibold text-center">សកម្មភាព</th>
+                                </tr>
+                            </thead>
+                            <tbody id="guest-table-body" class="divide-y divide-gray-100 text-sm">
+                                <!-- Data rows will be inserted here dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Empty State -->
+                    <div id="empty-state" class="hidden flex flex-col items-center justify-center py-12 text-gray-400">
+                        <i class="fa-regular fa-folder-open text-5xl mb-3 text-gray-300"></i>
+                        <p class="text-sm">មិនមានទិន្នន័យភ្ញៀវឡើយ</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- JavaScript logic -->
+    <script>
+        // State management
+        let guests = [];
+        
+        // DOM Elements
+        const guestForm = document.getElementById('guest-form');
+        const guestIdInput = document.getElementById('guest-id');
+        const guestNameInput = document.getElementById('guest-name');
+        const guestPhoneInput = document.getElementById('guest-phone');
+        const guestCompanionsInput = document.getElementById('guest-companions');
+        const guestRelationshipInput = document.getElementById('guest-relationship');
+        const guestGiftInput = document.getElementById('guest-gift');
+        const guestAddressInput = document.getElementById('guest-address');
+        const guestNotesInput = document.getElementById('guest-notes');
+        
+        const formTitle = document.getElementById('form-title');
+        const btnSubmit = document.getElementById('btn-submit');
+        const btnCancel = document.getElementById('btn-cancel');
+        const searchInput = document.getElementById('search-input');
+        const tableBody = document.getElementById('guest-table-body');
+        const emptyState = document.getElementById('empty-state');
+        
+        // Summary Card Elements
+        const totalGuestsCard = document.getElementById('total-guests');
+        const totalAttendeesCard = document.getElementById('total-attendees');
+        const totalGiftsCard = document.getElementById('total-gifts');
+
+        // Initial Load
+        window.addEventListener('DOMContentLoaded', () => {
+            const storedGuests = localStorage.getItem('wedding_guests');
+            if (storedGuests) {
+                guests = JSON.parse(storedGuests);
+            }
+            renderGuests(guests);
+        });
+
+        // Form Submit Handler (Add or Edit)
+        guestForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const guestId = guestIdInput.value;
+            const guestData = {
+                id: guestId ? parseInt(guestId) : Date.now(),
+                name: guestNameInput.value.trim(),
+                phone: guestPhoneInput.value.trim() || '---',
+                companions: parseInt(guestCompanionsInput.value) || 0,
+                relationship: guestRelationshipInput.value,
+                gift: parseFloat(guestGiftInput.value) || 0,
+                address: guestAddressInput.value.trim() || '---',
+                notes: guestNotesInput.value.trim() || '---'
+            };
+
+            if (guestId) {
+                // Edit existing
+                const index = guests.findIndex(g => g.id === parseInt(guestId));
+                if (index !== -1) {
+                    guests[index] = guestData;
+                }
+            } else {
+                // Add new
+                guests.push(guestData);
+            }
+
+            saveToLocalStorage();
+            renderGuests(guests);
+            resetForm();
+        });
+
+        // Save to LocalStorage
+        function saveToLocalStorage() {
+            localStorage.setItem('wedding_guests', JSON.stringify(guests));
+        }
+
+        // Render Guest Table & Dashboard
+        function renderGuests(listToRender) {
+            tableBody.innerHTML = '';
+            
+            if (listToRender.length === 0) {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+                
+                listToRender.forEach(guest => {
+                    const row = document.createElement('tr');
+                    row.className = "hover:bg-rose-50/30 transition-colors";
+                    row.innerHTML = `
+                        <td class="py-3 px-4 font-medium text-gray-900">
+                            <div>${escapeHTML(guest.name)}</div>
+                            <span class="text-xs text-gray-400 block lg:hidden">អាសយដ្ឋាន៖ ${escapeHTML(guest.address)}</span>
+                        </td>
+                        <td class="py-3 px-4 text-gray-600">${escapeHTML(guest.phone)}</td>
+                        <td class="py-3 px-4">
+                            <span class="inline-block px-2 py-1 text-xs font-semibold rounded-full ${getRelationshipBadgeClass(guest.relationship)}">
+                                ${guest.relationship}
+                            </span>
+                        </td>
+                        <td class="py-3 px-4 text-center text-gray-600">${guest.companions} នាក់</td>
+                        <td class="py-3 px-4 text-right font-medium text-emerald-600">$${guest.gift.toFixed(2)}</td>
+                        <td class="py-3 px-4 text-center space-x-1">
+                            <button onclick="editGuest(${guest.id})" class="text-blue-500 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 p-1.5 rounded transition" title="កែប្រែ">
+                                <i class="fa-regular fa-pen-to-square"></i>
+                            </button>
+                            <button onclick="deleteGuest(${guest.id})" class="text-rose-500 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 p-1.5 rounded transition" title="លុប">
+                                <i class="fa-regular fa-trash-can"></i>
+                            </button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+
+            updateDashboard();
+        }
+
+        // Update Dashboard Summary Stats
+        function updateDashboard() {
+            const totalGuestsCount = guests.length;
+            
+            // Total attendees (Guests + companions)
+            const totalAttendeesCount = guests.reduce((sum, guest) => {
+                return sum + 1 + (parseInt(guest.companions) || 0);
+            }, 0);
+
+            // Total gift money
+            const totalGiftsSum = guests.reduce((sum, guest) => {
+                return sum + (parseFloat(guest.gift) || 0);
+            }, 0);
+
+            totalGuestsCard.textContent = totalGuestsCount.toLocaleString('km-KH');
+            totalAttendeesCard.textContent = totalAttendeesCount.toLocaleString('km-KH');
+            totalGiftsCard.textContent = '$' + totalGiftsSum.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        // Filter/Search Function
+        function filterGuests() {
+            const query = searchInput.value.toLowerCase().trim();
+            const filtered = guests.filter(guest => {
+                return guest.name.toLowerCase().includes(query) || 
+                       guest.phone.includes(query);
+            });
+            renderGuests(filtered);
+        }
+
+        // Edit Guest
+        function editGuest(id) {
+            const guest = guests.find(g => g.id === id);
+            if (!guest) return;
+
+            // Fill form inputs
+            guestIdInput.value = guest.id;
+            guestNameInput.value = guest.name;
+            guestPhoneInput.value = guest.phone === '---' ? '' : guest.phone;
+            guestCompanionsInput.value = guest.companions;
+            guestRelationshipInput.value = guest.relationship;
+            guestGiftInput.value = guest.gift;
+            guestAddressInput.value = guest.address === '---' ? '' : guest.address;
+            guestNotesInput.value = guest.notes === '---' ? '' : guest.notes;
+
+            // Update Form UI
+            formTitle.innerHTML = `<i class="fa-solid fa-user-pen text-amber-500"></i> កែប្រែព័ត៌មានភ្ញៀវ`;
+            btnSubmit.innerHTML = `<i class="fa-solid fa-circle-check"></i> កែប្រែ`;
+            btnCancel.classList.remove('hidden');
+            
+            // Scroll to form (for mobile screens)
+            guestForm.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Delete Guest
+        function deleteGuest(id) {
+            if (confirm('តើអ្នកពិតជាចង់លុបទិន្នន័យភ្ញៀវរូបនេះមែនទេ?')) {
+                guests = guests.filter(g => g.id !== id);
+                saveToLocalStorage();
+                renderGuests(guests);
+                
+                // If currently editing the deleted guest, reset form
+                if (guestIdInput.value === id.toString()) {
+                    resetForm();
+                }
+            }
+        }
+
+        // Reset Form
+        function resetForm() {
+            guestForm.reset();
+            guestIdInput.value = '';
+            
+            formTitle.innerHTML = `<i class="fa-solid fa-user-plus text-rose-500"></i> ចុះឈ្មោះភ្ញៀវថ្មី`;
+            btnSubmit.innerHTML = `<i class="fa-solid fa-floppy-disk mr-1"></i> រក្សាទុក`;
+            btnCancel.classList.add('hidden');
+        }
+
+        // Get Badge Theme Classes based on Relationship
+        function getRelationshipBadgeClass(rel) {
+            switch(rel) {
+                case 'ខាងកូនកំលោះ':
+                    return 'bg-blue-100 text-blue-700';
+                case 'ខាងកូនស្រី':
+                    return 'bg-rose-100 text-rose-700';
+                case 'មិត្តភក្តិ':
+                    return 'bg-amber-100 text-amber-700';
+                case 'រួមការងារ':
+                    return 'bg-purple-100 text-purple-700';
+                default:
+                    return 'bg-gray-100 text-gray-700';
+            }
+        }
+
+        // Utility to prevent XSS
+        function escapeHTML(str) {
+            return str.replace(/[&<>'"]/g, 
+                tag => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    "'": '&#39;',
+                    '"': '&quot;'
+                }[tag] || tag)
+            );
+        }
+    </script>
+</body>
+</html>
