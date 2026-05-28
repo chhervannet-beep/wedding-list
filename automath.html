@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>កម្មវិធីបង្កើតវិញ្ញាសាអូតូ - គណិតវិទ្យា</title>
+    
+    <!-- ប្រើប្រាស់ Tailwind CSS សម្រាប់រចនាផ្ទៃមុខ -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- ប្រើប្រាស់ Google Fonts សម្រាប់អក្សរខ្មែរ -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Suwannaphum:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- កំណត់ MathJax ឲ្យស្គាល់សញ្ញា $...$ សម្រាប់រូបមន្ត -->
+    <script>
+        MathJax = {
+          tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']]
+          }
+        };
+    </script>
+    <!-- បណ្ណាល័យ MathJax សម្រាប់បង្ហាញរូបមន្តគណិតវិទ្យា (LaTeX) -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        body {
+            font-family: 'Suwannaphum', serif;
+            background-color: #f0f4f8; /* ពណ៌ផ្ទៃខាងក្រោយថ្មីស្រទន់ */
+            background-image: radial-gradient(circle at top right, #e0e7ff, transparent 40%),
+                              radial-gradient(circle at bottom left, #fae8ff, transparent 40%);
+            background-attachment: fixed;
+        }
+        
+        /* កំណត់ទំហំក្រដាស A4 សម្រាប់បង្ហាញលើអេក្រង់ */
+        .a4-paper {
+            width: 210mm;
+            min-height: 297mm;
+            background: white;
+            margin: 0 auto;
+            padding: 20mm;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border-radius: 8px; /* គែមក្រដាសមូលបន្តិច */
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .math-block {
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+
+        /* ជើងទំព័រ (Footer) */
+        .footer {
+            position: absolute;
+            bottom: 20mm;
+            left: 20mm;
+            right: 20mm;
+            text-align: right;
+            font-weight: bold;
+            font-size: 14px;
+            color: #374151;
+            border-top: 2px solid #000;
+            padding-top: 10px;
+        }
+
+        /* កំណត់ពេល Print មិនឲ្យចេញប៊ូតុង និងឲ្យពេញក្រដាសល្អ */
+        @media print {
+            body {
+                background-color: white;
+                background-image: none;
+                margin: 0;
+                padding: 0;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .a4-paper {
+                box-shadow: none;
+                border-radius: 0;
+                margin: 0;
+                padding: 15mm;
+                width: 100%;
+                min-height: 100vh;
+            }
+            .footer {
+                bottom: 15mm;
+            }
+        }
+
+        /* រចនាបទបន្ថែមសម្រាប់ទម្រង់វិញ្ញាសាឱ្យស្អាតទាក់ទាញ */
+        .exam-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            border-bottom: 3px double #94a3b8;
+            padding-bottom: 1rem;
+        }
+        .exam-title h2 {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: #1e293b;
+            text-transform: uppercase;
+        }
+        .exam-roman {
+            color: #1d4ed8;
+            font-size: 1.15rem;
+            font-weight: 800;
+            border-bottom: 2px solid #bfdbfe;
+            display: inline-block;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            padding-right: 1rem;
+        }
+        .exam-text {
+            color: #334155;
+            line-height: 1.8;
+            text-align: justify;
+        }
+    </style>
+</head>
+<body class="py-6 px-4 md:px-8">
+
+    <!-- ផ្ទាំងបញ្ជា (បង្ហាញតែលើអេក្រង់) ផ្លាស់ប្តូរការរចនាថ្មី -->
+    <div class="max-w-5xl mx-auto mb-8 mt-2 no-print bg-white/80 backdrop-blur-md p-6 rounded-2xl shadow-lg border border-gray-100">
+        <div class="flex flex-col lg:flex-row justify-between items-center gap-6">
+            <div class="text-center lg:text-left">
+                <h1 class="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-purple-700 flex items-center justify-center lg:justify-start gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                    ប្រព័ន្ធបង្កើតវិញ្ញាសាអូតូ (AI)
+                </h1>
+                <p class="text-sm text-gray-600 mt-1 font-medium">បង្កើតវិញ្ញាសាថ្មីៗមិនចេះរីងស្ងួត ស្របតាមស្តង់ដារបាក់ឌុបកម្ពុជា</p>
+            </div>
+            
+            <div class="flex flex-wrap gap-3 justify-center lg:justify-end items-center">
+                
+                <!-- ជម្រើសកម្រិតថ្នាក់ -->
+                <div class="relative group">
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                    </div>
+                    <select id="class-level" class="bg-gray-50 border-2 border-indigo-200 text-indigo-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block pl-10 p-2.5 font-bold cursor-pointer outline-none hover:border-indigo-300 transition-colors shadow-sm">
+                        <option value="science">ថ្នាក់វិទ្យាសាស្រ្តពិត (Science)</option>
+                        <option value="social">ថ្នាក់វិទ្យាសាស្រ្តសង្គម (Social)</option>
+                    </select>
+                </div>
+
+                <!-- ប៊ូតុងបង្កើតថ្មីដោយ AI (លេចធ្លោជាងគេ) -->
+                <button onclick="generateExamWithAI()" id="btn-ai" class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold py-2.5 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all flex items-center gap-2 text-sm border border-purple-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    <span id="btn-ai-text">AI បង្កើតវិញ្ញាសាថ្មី</span>
+                </button>
+
+                <div class="h-8 w-px bg-gray-300 hidden sm:block mx-1"></div> <!-- បន្ទាត់ខណ្ឌ -->
+
+                <!-- ប៊ូតុងទាញយក និង Print -->
+                <button onclick="downloadWord()" title="ទាញយកជា Word សម្រាប់ MathType" class="bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold p-2.5 rounded-lg shadow-sm border border-blue-200 transition-colors flex items-center gap-2 text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                    <span class="hidden sm:inline">Word</span>
+                </button>
+                
+                <button onclick="downloadMarkdown()" title="ទាញយកជា Markdown សម្រាប់ LaTeX / Obsidian" class="bg-gray-50 hover:bg-gray-100 text-gray-700 font-bold p-2.5 rounded-lg shadow-sm border border-gray-200 transition-colors flex items-center gap-2 text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>
+                    <span class="hidden sm:inline">LaTeX/MD</span>
+                </button>
+
+                <button onclick="generateExam()" title="បង្កើតពីគំរូធម្មតា (គ្មានអ៊ីនធឺណិត)" class="bg-gray-50 hover:bg-gray-100 text-gray-700 font-bold p-2.5 rounded-lg shadow-sm border border-gray-200 transition-colors flex items-center gap-2 text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" /></svg>
+                </button>
+                
+                <button onclick="window.print()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 px-4 rounded-lg shadow-md transform hover:-translate-y-0.5 transition-all flex items-center gap-2 text-sm border border-emerald-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd" /></svg>
+                    Print
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ក្រដាសវិញ្ញាសា -->
+    <div class="a4-paper text-sm text-gray-900 leading-relaxed" id="exam-content">
+        <!-- ខ្លឹមសារនឹងត្រូវបានបញ្ចូលទីនេះដោយ JavaScript -->
+    </div>
+
+    <script>
+        // អថេរសកល (Global Variables) សម្រាប់ផ្ទុកទិន្នន័យបច្ចុប្បន្ន ដើម្បីពេលទាញយកបានទិន្នន័យដូចគ្នា
+        let currentYear, currentLimitNum1, currentK;
+        let currentMarkdownContext = ""; // ផ្ទុកទិន្នន័យវិញ្ញាសាជាអត្ថបទ Markdown
+        
+        // -------------------------------------------------------------
+        // ផ្នែកហៅទៅកាន់ AI (Gemini API) ដែលបានពង្រឹងលក្ខខណ្ឌថ្មី
+        // -------------------------------------------------------------
+        const apiKey = ""; // API Key នឹងត្រូវបញ្ជូលស្វ័យប្រវត្តិដោយប្រព័ន្ធ
+
+        // អនុគមន៍សម្រាប់ហៅ API ដោយមានការសាកល្បងច្រើនដងបើបរាជ័យ (Exponential Backoff)
+        async function fetchWithRetry(url, options, maxRetries = 5) {
+            let retries = 0;
+            const delays = [1000, 2000, 4000, 8000, 16000];
+            while (retries < maxRetries) {
+                try {
+                    const response = await fetch(url, options);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return await response.json();
+                } catch (error) {
+                    if (retries >= maxRetries - 1) {
+                        throw error;
+                    }
+                    await new Promise(resolve => setTimeout(resolve, delays[retries]));
+                    retries++;
+                }
+            }
+        }
+
+        // អនុគមន៍បញ្ជាឲ្យ AI បង្កើតវិញ្ញាសា
+        async function generateExamWithAI() {
+            const btn = document.getElementById('btn-ai');
+            const btnText = document.getElementById('btn-ai-text');
+            const originalText = btnText.innerText;
+            const classLevel = document.getElementById('class-level').value; 
+            
+            // បិទប៊ូតុងសិនពេលកំពុងដំណើរការ
+            btn.disabled = true;
+            btnText.innerText = "កំពុងតាក់តែង...";
+            btn.classList.add('opacity-75', 'cursor-not-allowed', 'animate-pulse');
+            
+            // បង្ហាញ Loading ថ្មីស្អាតជាងមុន
+            document.getElementById('exam-content').innerHTML = `
+                <div class="flex flex-col items-center justify-center h-full min-h-[500px]">
+                    <div class="relative w-24 h-24 mb-6">
+                        <div class="absolute inset-0 rounded-full border-t-4 border-b-4 border-purple-600 animate-spin"></div>
+                        <div class="absolute inset-2 rounded-full border-l-4 border-r-4 border-blue-400 animate-spin" style="animation-direction: reverse;"></div>
+                        <div class="absolute inset-0 flex items-center justify-center font-bold text-xl text-purple-700">AI</div>
+                    </div>
+                    <div class="text-xl text-transparent bg-clip-text bg-gradient-to-r from-purple-700 to-blue-700 font-extrabold mb-2 text-center">
+                        AI កំពុងតាក់តែងវិញ្ញាសា${classLevel === 'science' ? 'វិទ្យាសាស្រ្តពិត' : 'វិទ្យាសាស្រ្តសង្គម'}ថ្មី...
+                    </div>
+                    <div class="text-sm text-gray-500 font-medium bg-gray-100 px-4 py-2 rounded-full mt-2">
+                        សូមរង់ចាំប្រមាណ ៥ ទៅ ១០ វិនាទី 🚀
+                    </div>
+                </div>
+            `;
+
+            // រៀបចំលក្ខខណ្ឌទៅតាមកម្រិតថ្នាក់ (តឹងរ៉ឹងបំផុត)
+            let prompt = "";
+
+            if (classLevel === "science") {
+                prompt = `អ្នកគឺជាសាស្ត្រាចារ្យគណិតវិទ្យាដ៏ពូកែម្នាក់។ សូមបង្កើតវិញ្ញាសាគណិតវិទ្យាថ្នាក់ទី១២ (វិទ្យាសាស្រ្តពិត) ត្រៀមប្រឡងបាក់ឌុបនៅកម្ពុជាថ្មីមួយ។
+លក្ខខណ្ឌតឹងរ៉ឹង (Must Follow):
+១. វិញ្ញាសាត្រូវមាន ៥ រ៉ូម៉ាំង ដែលមានកម្រិតលំបាកខ្ពស់ និងគ្របដណ្ដប់លើមេរៀនសំខាន់ៗដូចខាងក្រោម៖
+   - I. ចំនួនកុំផ្លិច៖ ការគណនា ទម្រង់ត្រីកោណមាត្រ ទម្រង់អ៊ិចស្ប៉ូណង់ស្យែល ឬការរកឫសទី n។
+   - II. លីមីត (៣លំហាត់) និង អាំងតេក្រាល (៣លំហាត់)៖ ការគណនាលីមីតរាងមិនកំណត់ និងអាំងតេក្រាលកំណត់ (មានទាមទាររកផ្ទៃក្រឡា ឬ មាឌសូលីតបរិវត្ត)។
+   - III. សមីការឌីផេរ៉ង់ស្យែល (២សំនួរ គឺលំដាប់ទី១ ឬទី២) និង ប្រូបាប (៣សំនួរ ពីប្រូបាបព្រឹត្តិការណ៍ ច្បាប់ប៊ែរនូយី ឬអថេរចៃដន្យ)។
+   - IV. ធរណីមាត្រក្នុងលំហ ឬ កោនិក (៣សំនួរ)៖ សមីការប្លង់ បន្ទាត់ ចម្ងាយ ផលគុណស្កាលែ ផលគុណវ៉ិចទ័រ ឬលំហាត់ប៉ារ៉ាបូល អេលីប អ៊ីពែបូល។
+   - V. សិក្សាអថេរភាព និងសង់ក្រាបនៃអនុគមន៍៖ ត្រូវតែជា "អនុគមន៍អ៊ិចស្ប៉ូណង់ស្យែល" ឬ "អនុគមន៍លោការីត" ជានិច្ច (អាចមានអនុគមន៍ជំនួយ)។
+២. លេខត្រូវតែថ្មី Random ខុសពីមុនជានិច្ច គ្មានដែនកំណត់ ប៉ុន្តែត្រូវតែអាចគណនាបានពិតប្រាកដ។
+៣. សរសេរជាទម្រង់ Markdown ធម្មតា ដោយចាប់ផ្តើមចំណងជើង # វិញ្ញាសាគណិតវិទ្យា ថ្នាក់វិទ្យាសាស្រ្តពិត ត្រៀមប្រឡងបាក់ឌុប
+៤. ប្រើសញ្ញា $ សម្រាប់រូបមន្តគណិត (ឧទាហរណ៍ $x^2+1$ ឬ $\\lim_{x \\to 0}$ )។ កុំចុះបន្ទាត់កណ្តាលរូបមន្ត។ កុំប្រើសញ្ញា \`\`\` គ្របពីលើអត្ថបទ។
+៥. ខាងចុងបំផុត ត្រូវដាក់សញ្ញា --- មួយបន្ទាត់ រួចចុះបន្ទាត់សរសេរពាក្យថា "ស្តង់ដារបាក់ឌុប | បង្រៀនដោយ លោកគ្រូ ឆយ សុវ៉ាន់ណេត Tel: 016 567 437"។`;
+            } else {
+                prompt = `អ្នកគឺជាសាស្ត្រាចារ្យគណិតវិទ្យាដ៏ពូកែម្នាក់។ សូមបង្កើតវិញ្ញាសាគណិតវិទ្យាថ្នាក់ទី១២ (វិទ្យាសាស្រ្តសង្គម) ត្រៀមប្រឡងបាក់ឌុបនៅកម្ពុជាថ្មីមួយ។
+លក្ខខណ្ឌតឹងរ៉ឹង (Must Follow):
+១. ហាមដាច់ខាត (STRICTLY FORBIDDEN): ហាមមានលំហាត់ ចំនួនកុំផ្លិច, សមីការឌីផេរ៉ង់ស្យែល និង ធរណីមាត្រក្នុងលំហ។
+២. វិញ្ញាសាត្រូវមាន ៥ រ៉ូម៉ាំង ដែលផ្តោតលើការអនុវត្តមូលដ្ឋាន មិនសូវស្មុគស្មាញ មានការគណនាខ្លីៗ៖
+   - I. លីមីត (៣លំហាត់)៖ ការគណនាលីមីតរាងមិនកំណត់ងាយៗ។
+   - II. អាំងតេក្រាលកំណត់ (៣លំហាត់)។
+   - III. ប្រូបាប៖ លំហាត់ប្រូបាបមូលដ្ឋានងាយៗ។
+   - IV. កោនិក (ប៉ារ៉ាបូល ឬ អេលីប)។
+   - V. សិក្សាអថេរភាព និងសង់ក្រាបនៃអនុគមន៍៖ ត្រូវតែជា "អនុគមន៍សនិទាន" ជានិច្ច! (ទម្រង់ប្រភាគ ឧទាហរណ៍ $y = \\frac{ax^2+bx+c}{dx+e}$ ឬ $y = \\frac{ax+b}{cx+d}$)។
+៣. លេខត្រូវតែថ្មី Random ខុសពីមុនជានិច្ច ប៉ុន្តែត្រូវតែអាចគណនាបានពិតប្រាកដ។
+៤. សរសេរជាទម្រង់ Markdown ធម្មតា ដោយចាប់ផ្តើមចំណងជើង # វិញ្ញាសាគណិតវិទ្យា ថ្នាក់វិទ្យាសាស្រ្តសង្គម ត្រៀមប្រឡងបាក់ឌុប
+៥. ប្រើសញ្ញា $ សម្រាប់រូបមន្តគណិត។ កុំចុះបន្ទាត់កណ្តាលរូបមន្ត។ កុំប្រើសញ្ញា \`\`\` គ្របពីលើអត្ថបទ។
+៦. ខាងចុងបំផុត ត្រូវដាក់សញ្ញា --- មួយបន្ទាត់ រួចចុះបន្ទាត់សរសេរពាក្យថា "ស្តង់ដារបាក់ឌុប | បង្រៀនដោយ លោកគ្រូ ឆយ សុវ៉ាន់ណេត Tel: 016 567 437"។`;
+            }
+
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            const payload = {
+                contents: [{ parts: [{ text: prompt }] }]
+            };
+
+            try {
+                const data = await fetchWithRetry(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                let text = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+                
+                // ជម្រះកូដ Markdown ដែល AI អាចច្រឡំដាក់
+                text = text.replace(/```markdown\n?/g, '').replace(/```\n?/g, '').trim(); 
+                
+                currentMarkdownContext = text;
+                renderMarkdownToDOM(text);
+                
+            } catch (error) {
+                console.error("AI Generation failed", error);
+                document.getElementById('exam-content').innerHTML = `
+                    <div class="flex flex-col items-center justify-center h-full min-h-[500px]">
+                        <div class="text-3xl mb-4">😔</div>
+                        <div class="text-xl text-red-600 font-bold mb-2">បរាជ័យក្នុងការភ្ជាប់ទៅកាន់ AI</div>
+                        <div class="text-gray-600 text-center max-w-md">សូមពិនិត្យមើលប្រព័ន្ធអ៊ីនធឺណិតរបស់អ្នក ឬសាកល្បងចុចប៊ូតុងបង្កើតម្តងទៀត។</div>
+                    </div>`;
+            } finally {
+                // បើកប៊ូតុងវិញ
+                btn.disabled = false;
+                btnText.innerText = originalText;
+                btn.classList.remove('opacity-75', 'cursor-not-allowed', 'animate-pulse');
+            }
+        }
+
+        // -------------------------------------------------------------
+        // ផ្នែកបំលែង Markdown ទៅបង្ហាញលើ DOM
+        // -------------------------------------------------------------
+        function renderMarkdownToDOM(markdownText) {
+            let text = markdownText;
+            
+            // បំបែកយកជើងទំព័រ (Footer) បើមាន
+            let mainContent = text;
+            let footerText = "";
+            const footerSplit = text.split(/---\n?/);
+            if (footerSplit.length > 1) {
+                mainContent = footerSplit[0].trim();
+                footerText = footerSplit[1].trim();
+            } else {
+                // បើគ្មាន --- ទេ យើងរកពាក្យ បង្រៀនដោយ
+                const fallbackSplit = text.split(/(បង្រៀនដោយ.*)/);
+                if(fallbackSplit.length > 1) {
+                    mainContent = fallbackSplit[0].trim();
+                    footerText = fallbackSplit[1].trim();
+                }
+            }
+
+            // រចនាបទថ្មី ឲ្យវិញ្ញាសាមើលទៅស្អាត និងមានសណ្តាប់ធ្នាប់
+            // ១. បម្លែងចំណងជើងធំ ដាក់កណ្តាល និងមានបន្ទាត់ពីក្រោម
+            mainContent = mainContent.replace(/^#\s+(.*$)/gim, '<div class="exam-title"><h2>$1</h2><p class="text-sm text-gray-500 mt-1 font-bold">រយៈពេល៖ ១៥០ នាទី</p></div>');
+            
+            // ២. បម្លែងលេខរ៉ូម៉ាំង (I., II., III....) ឱ្យលេចធ្លោ មានពណ៌ និងបន្ទាត់
+            mainContent = mainContent.replace(/\*\*(I|II|III|IV|V|VI|VII)\.\*\*/gim, '<div class="exam-roman">$1.</div>');
+            mainContent = mainContent.replace(/^(I|II|III|IV|V|VI|VII)\./gim, '<div class="exam-roman">$1.</div>');
+            
+            // ៣. បម្លែងអក្សរដិតធម្មតា
+            mainContent = mainContent.replace(/\*\*(.*?)\*\*/gim, '<span class="font-bold text-gray-900">$1</span>');
+            
+            // ៤. រៀបចំការចុះបន្ទាត់ និងបន្ថែមគម្លាត
+            mainContent = mainContent.replace(/\n\n/g, '</p><p class="mt-3">').replace(/\n/g, '<br>');
+            
+            // ផ្គុំចូលគ្នាវិញ ដោយបន្ថែមថ្នាក់ CSS សម្រាប់អក្សរ
+            let html = `<div class="exam-text"><p>${mainContent}</p></div>`;
+            
+            if (footerText) {
+                html += `<div class="footer">${footerText.replace(/\n/g, '<br>')}</div>`;
+            } else {
+                // បើសិន AI ភ្លេចដាក់ជើងទំព័រ
+                html += `<div class="footer">បង្រៀនដោយ លោកគ្រូ ឆយ សុវ៉ាន់ណេត Tel: 016 567 437</div>`;
+            }
+
+            document.getElementById('exam-content').innerHTML = html;
+
+            // ប្រាប់ MathJax ឲ្យ Render រូបមន្ត LaTeX ឡើងវិញ
+            if (window.MathJax) {
+                MathJax.typesetPromise([document.getElementById('exam-content')]).catch(function (err) {
+                    console.error('MathJax rendering error:', err.message);
+                });
+            }
+        }
+
+        // -------------------------------------------------------------
+        // ផ្នែកគំរូចាស់ (Local Randomizer)
+        // -------------------------------------------------------------
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function generateExam() {
+            currentYear = getRandomInt(2023, 2026);
+            currentLimitNum1 = getRandomInt(2, 5);
+            currentK = [9, 16, 25][getRandomInt(0, 2)];
+            
+            currentMarkdownContext = getExamMarkdownLocal();
+            renderMarkdownToDOM(currentMarkdownContext);
+        }
+
+        function getExamMarkdownLocal() {
+            return `
+# វិញ្ញាសាទី១ ត្រៀមប្រឡងប្រឡងបាក់ឌុបមធ្យមសិក្សាទុតិយភូមិ
+
+**I.** គេមានចំនួនកុំផ្លិច $a_m = (1 - m) + (3 - m)i\\sqrt{3}$ ។
+កំណត់ $a_2$ និង $a_4$ ដោយឱ្យលទ្ធផលជាទម្រង់ពីជគណិត និងត្រីកោណមាត្រ។ គណនា $(a_2)^{${currentYear}}$ និង $(a_4)^{${currentYear}}$។
+យក $b = i\\frac{\\sqrt{3}}{3}a_4$ ចូរកំណត់ $b$ ជាទម្រង់ត្រីកោណមាត្រ។ បង្កើតសមីការដឺក្រេទី២ ដែលមានឫស $a_2$ និង $b$។
+
+**II.** គណនាលីមីត និងអាំងតេក្រាលនៃអនុគមន៍ដូចខាងក្រោម៖
+$\\lim_{x\\to0} \\frac{\\sin 3x - ${currentLimitNum1} \\tan 3x + x^2}{x + 5 \\tan 2x}$ 
+$\\lim_{x\\to2} \\frac{x^3 - 3x^2 + 4x - 4}{\\sqrt{x + 2} - 2}$
+$\\lim_{x\\to0} \\frac{\\ln(1 - 2\\sin^2 2x) + 3\\tan^2 3x}{x^2}$
+
+គេឱ្យអនុគមន៍ $f(x) = \\frac{3\\cos x - \\sin x}{\\sin x + \\cos x}$ ដែល $x \\neq -\\frac{\\pi}{4}$។ គណនាអាំងតេក្រាល $I = \\int_{0}^{\\frac{\\pi}{2}} f(x)dx$ ដោយដឹងថា $f(x)$ អាចសរសេរជាទម្រង់ $f(x) = m + \\frac{n(\\sin x - \\cos x)}{\\sin x + \\cos x}$។
+
+**III.** គេឱ្យប៉ារ៉ាបូល $P$ ដែលមានសមីការ $y^2 - 4y - 4mx + 4 - 4m(m + 1) = 0$។
+a. ស្រាយបំភ្លឺថា $P$ មានកុំប៉ូលជាចំណុចមួយដែលត្រូវកំណត់ដោយ $m$។
+b. បើ $m = 1$ ចូររកផលបូកបម្រែបម្រួល និងសមីការប៉ារ៉ាបូល $P$។
+
+គេឱ្យប្លង់ពីរ $P: 2x - y + 2z - 4 = 0$ និង $Q: x + y - \\frac{1}{2}z - 2 = 0$។
+a. ស្រាយបញ្ជាក់ថា $P$ និង $Q$ កែងគ្នា។ បង្ហាញថា $A(1, 2, 2)$ ជាចំណុចរួមនៃ $P$ និង $Q$។
+b. សរសេរសមីការបន្ទាត់ $L$ ជាប្រសព្វនៃប្លង់ទាំងពីរ។ បង្ហាញថា $L$ ស្របនឹង $\\vec{n}_P \\times \\vec{n}_Q$ ដែល $\\vec{n}_P$ និង $\\vec{n}_Q$ ជាវ៉ិចទ័រន័រម៉ាល់នៃ $P$ និង $Q$ រៀងគ្នា។
+
+**IV.** $f$ ជាអនុគមន៍កំណត់ដោយ $f(x) = x + \\frac{${currentK}}{4(e^x - 1)}$ មានក្រាបតំណាង $C$។
+១. រកដែនកំណត់នៃ $f$ គណនាលីមីតនៃ $f$ ត្រង់ $+\\infty, -\\infty$ និង $0$។ ទាញរកសមីការអាស៊ីមតូត នៃក្រាប $C$។
+២. ស្រាយបញ្ជាក់ថា $D_1: y = x$ ជាអាស៊ីមតូត ត្រេតនៃក្រាប $C$។ បញ្ជាក់ទីតាំងធៀបរវាងក្រាប $C$ និង $D_1$។
+៣. ស្រាយបំភ្លឺថា $f(x) = x - \\frac{${currentK}}{4} + \\frac{${currentK}e^x}{4(e^x - 1)}$។ ទាញរកសមីការអាស៊ីមតូត ត្រេត $D_2$ នៃក្រាប $C$។
+៤. ស្រាយបំភ្លឺថា $\\forall x \\neq 0, f'(x) = \\frac{(e^x - 4)(4e^x - 1)}{4(e^x - 1)^2}$។ សិក្សាទិសដៅ និងសង់តារាងអថេរភាពនៃ $f$។
+៥. សរសេរសមីការបន្ទាត់ $T$ ប៉ះនឹងក្រាប $C$ ត្រង់ចំណុច $x = \\ln 2$។ សង់ក្រាប $C$។
+៦. គណនាផ្ទៃក្រឡានៃផ្នែកដែលខណ្ឌដោយក្រាប $C$ និងបន្ទាត់ $D_2$ ត្រង់ចំណុច $x = \\ln 4$ និង $x = \\ln 6$។
+
+**V.** កាបូបមួយប្រភេទ មានរូបដែលជាប្រភេទ ៥ មុខ សម្បុរ ៤ មុខ និង ហាង ៤ មុខ។ បុរសម្នាក់បានទៅទិញរូបចំនួន ៣ មុខ ដោយចៃដន្យ។ គណនាប្រូបាប៊ីលីតេនៃព្រឹត្តិការណ៍៖
+$A$៖ កម្បូដបាន ៣ មុខដូចគ្នា។
+$B$៖ កម្បូដបាន សម្បុរ តែ ១ មុខគត់។
+$C$៖ កម្បូដបាន ៣ មុខផ្សេងៗគ្នា។
+
+**VI.** គេឱ្យសមីការឌីផេរ៉ង់ស្យែល $E: (y' - 2y)' = 3(y' - 2y)$ និង $(E'): f' - 3f = 0$។
+១. ដោះស្រាយសមីការ $(E')$ ដោយដឹងថា ក្រាបនៃ $f$ កាត់ $A(0,3)$ រួចទាញរកចម្លើយទូទៅនៃសមីការ $E$ តាម $f$។
+២. ដោះស្រាយសមីការ $(E)$ តាមរបៀបទី ២ រួចរកចម្លើយពិសេសនៃ $(E)$ ដោយដឹងថា ក្រាប $C$ ប៉ះនឹងបន្ទាត់ $y = x - 4$ ត្រង់ចំណុចដែលមានអាប់ស៊ីស ០។
+
+---
+បង្រៀនដោយ លោកគ្រូ ឆយ សុវ៉ាន់ណេត Tel: 016 567 437
+`.trim();
+        }
+
+        // -------------------------------------------------------------
+        // ផ្នែកទាញយកឯកសារ
+        // -------------------------------------------------------------
+        function downloadWord() {
+            if (!currentMarkdownContext) {
+                alert("សូមបង្កើតវិញ្ញាសាសិន!");
+                return;
+            }
+            
+            // រៀបចំអត្ថបទសម្រាប់ Word
+            let content = currentMarkdownContext
+                .replace(/^#\s+(.*$)/gim, '<h2 align="center" style="color:#1d4ed8;">$1</h2>')
+                .replace(/\n\n/g, '<br><br>')
+                .replace(/\n/g, '<br>')
+                .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+                
+            const html = `
+            <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+            <head>
+                <meta charset='utf-8'>
+                <title>Exam</title>
+            </head>
+            <body style="font-family: 'Khmer OS Siemreap', 'Suwannaphum', sans-serif;">
+                <div style="font-size: 12pt; line-height: 1.5;">
+                    ${content}
+                </div>
+            </body>
+            </html>
+            `;
+
+            const blob = new Blob(['\ufeff', html], { type: 'application/msword' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'exam_mathtype.doc';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function downloadMarkdown() {
+            if (!currentMarkdownContext) {
+                alert("សូមបង្កើតវិញ្ញាសាសិន!");
+                return;
+            }
+            const blob = new Blob([currentMarkdownContext], { type: 'text/markdown;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'exam_obsidian_latex.md';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // ដំណើរការបង្កើតវិញ្ញាសាពីគំរូចាស់ពេលបើកកម្មវិធីដំបូង
+        window.onload = generateExam;
+
+    </script>
+</body>
+</html>
